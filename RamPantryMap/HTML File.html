@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ram Pantry Map</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <style>
+        #map {position: absolute; top: 0; bottom: 0; left: 0; right: 0; z-index: 1; }
+        #image-container { position: absolute; top: 0; bottom: 0; left: 0; right: 0; z-index: 2; display: none; background-color: rgba(0, 0, 0, 0.8); }
+        #image-modal { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); max-width: 80%; max-height: 80%; }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+
+    <div id="image-container">
+        <img id="image-modal" src="" alt="Image" />
+    </div>
+
+    <!--
+
+    -->
+
+    <script>
+      var MonroeLibrary = new Array(37.547696041278314, -77.45363226621537);
+      var Gateway = new Array(37.54066510036427, -77.43038022007615);
+      var EngW = new Array(37.54557139686422, -77.44937097589359);
+      var Snead = new Array(37.54483910511484, -77.44815046240298);
+      var Health = new Array(37.54160947722921, -77.42964978770604);
+      var StudCommons = new Array(37.54652885070679, -77.45331308407073);
+      var McGlothian = new Array(37.539846008628956, -77.43034467404276);
+      var Harris = new Array(37.54678113934944, -77.45490487774873);
+      var Cary = new Array(37.54376547087449, -77.44851486226818);
+      var MCALC = new Array(37.54749722914737, -77.45429441636536);
+      var Gym = new Array(37.54458947265039, -77.45394060473012);
+      var Larrick = new Array(37.544882011758254, -77.42965671147537);
+
+      var Coordinates = new Array(MonroeLibrary, Gateway, EngW, Snead, Health, StudCommons, McGlothian, Harris, Cary, MCALC, Gym, Larrick);
+      var Names = new Array("Monroe Park Library Pantry", "Gateway Pantry", "Engineering West Hall Pantry", "Snead Hall Pantry", "Health Sciences Pantry", "Student Commons Pantry", "McGlothian Pantry", "Harris Hall Pantry", "Cary and Belvidere Pantry", "MCALC Pantry", "Cary St. Gym Pantry", "Larrick Pantry");
+      var Usage = new Array(3421, 63, 1327, 836, 15, 1224, 693, 234, 546, 1752, 4673, 1);
+      var Imgs = ["Monroe Park Library Pantry.jpg", "Gateway Pantry.jpg", "Engineering West Hall Pantry.jpg", "Snead Hall Pantry.jpg", "Health Sciences Pantry.jpg", "Student Commons Pantry.jpg", "McGlothian Pantry.jpg", "Harris Hall Pantry.jpg", "Cary and Belvidere Pantry.jpg", "MCALC Pantry.jpg", "Cary St. Gym Pantry.jpg", "Larrick Pantry.jpg"];
+
+
+        var map = L.map('map').setView([37.54363123248576, -77.44311178939724], 15.5);
+        L.tileLayer('https://api.maptiler.com/maps/streets-v2/{z}/{x}/{y}.png?key=JsODHR4KcZHXFNsQBQXi', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>">OpenStreetMap</a>'
+        }).addTo(map);
+
+        var markers = new Array();
+        var circles = new Array();
+
+        var totalUsage = 0;
+        for(var i = 0; i < Usage.length; i++) {
+            totalUsage += Usage[i];
+        }
+
+        for(var i = 0; i < Coordinates.length; i++) {
+            markers.push(L.marker(Coordinates[i], {title: Names[i]}).addTo(map));
+            var radii = 250*(Usage[i]/totalUsage);
+            var color = "blue"
+            if(radii < 10)
+                radii = 10;
+            else if (radii < 40.5)
+                color = "yellow"
+            else if (radii < 75.5)
+                color = "orange"
+            else
+                color = "red"
+
+            circles.push(L.circle(Coordinates[i], { color: color, fillColor: color, fillOpacity: 0.25, radius: radii }).addTo(map));
+            circles[i].bindPopup("Total 2022-2023 Usage: " + Usage[i]);
+        }
+
+        function yayOpenImage(img) {
+            const imageModal = document.getElementById('image-modal');
+            imageModal.src = img;
+            document.getElementById('image-container').style.display = 'block';
+        }
+
+        markers.forEach(function(marker, i) {
+            marker.on('click', function() {
+                yayOpenImage(Imgs[i]);
+            });
+        });
+
+        document.getElementById('image-container').addEventListener('click', function(event) {
+            if (event.target === this) {
+                this.style.display = 'none';
+            }
+        });
+
+    </script>
+</body>
+</html>
